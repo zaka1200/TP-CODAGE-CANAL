@@ -150,4 +150,22 @@ syndrome_table =
     
 ```
 
+Pour coder/décoder un message aléatoire avec un bruit AWGN
 
+```matlab
+function encoded_message = encode(message, generator_matrix)
+    % message est le message à coder, generator_matrix est la matrice de génération utilisée pour coder le message
+    encoded_message = mod(message*generator_matrix, 2);
+end
+
+function decoded_message = decode(received_message, parity_check_matrix)
+    % received_message est le message reçu avec bruit, parity_check_matrix est la matrice de vérification utilisée pour décoder le message
+    syndrome = mod(received_message*parity_check_matrix, 2);
+    [~, error_index] = ismember(syndrome, error_matrix, 'rows');
+    error_vector = zeros(1, n);
+    error_vector(error_index) = 1;
+    decoded_message = mod(received_message + error_vector, 2);
+end
+```
+
+- La première fonction, encode, prend en entrée le message aléatoire et la matrice de génération pour coder le message et retourne le message codé. La deuxième fonction, decode, prend en entrée le message reçu avec bruit et la matrice de vérification pour décoder le message, puis calcule le syndrome en multipliant le message reçu avec bruit avec la matrice de vérification. Ensuite, elle utilise la fonction ismember pour trouver l'index de l'erreur dans la matrice d'erreur, puis crée le vecteur d'erreur à partir de cet index et ajoute ce vecteur d'erreur au message reçu avec bruit pour obtenir le message décodé.  	
