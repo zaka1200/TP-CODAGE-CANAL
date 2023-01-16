@@ -31,14 +31,33 @@ pour s'assurer que la matrice H est bien une matrice de contrôle de parité, on
 GH = G*H';
 
 ```
+
+ GH est bien égal à 0 cela signifie que G et H sont bien des matrices génératrice et de contrôle de parité
+ 
+ ```matlab
+K=4; % Longueur des mots information message L=2^K; % nombre de mots codes
+for i=1:L, M(i,:)=de2bi(i-1,K,'left-msb'); end
+code=rem(M*G,2) % La table des mots codes
+```
+ 
 - Le code Matlab suivant définit une variable K égale à 4, qui représente la longueur des mots d'information (également appelés mots de message). La variable L est ensuite définie comme étant 2 élevé à la puissance de K, ce qui est utilisé pour calculer le nombre de mots de code.
 
 - La ligne suivante utilise une boucle for pour itérer à travers toutes les valeurs de i de 1 à L. Pour chaque itération, la fonction de2bi est appelée avec la valeur actuelle de i moins 1 comme entrée et K comme nombre de bits. L'option 'left-msb' est utilisée pour spécifier que le bit le plus significatif est du côté gauche. La sortie de la fonction est stockée dans la variable M à la ligne et à la colonne correspondantes.
 
 - Enfin, la variable code est définie comme le résultat de la multiplication matricielle de M et G, prise modulo 2. On obtient ainsi le tableau des mots code.
 
+Pour déterminer toutes les erreurs possibles de poids 1 (et inférieur) et en déduire la table des syndromes, on va utiliser le code Matlab suivante :
+
 ```matlab
-K=4; % Longueur des mots information message L=2^K; % nombre de mots codes
-for i=1:L, M(i,:)=de2bi(i-1,K,'left-msb'); end
-code=rem(M*G,2) % La table des mots codes
+    [n, k] = size(H);
+    error_matrix = zeros(n, n);
+    for i = 1:n
+        error_vector = zeros(1, n);
+        error_vector(i) = 1;
+        error_matrix(i,:) = mod(error_vector*H, 2);
+    end
+    syndrome_table = error_matrix(:,k+1:n);
 ```
+
+ce code prend en entrée la matrice de controle utilisée pour générer le code, on utilise une boucle pour générer toutes les erreurs possibles de poids 1 (et inférieur) en multipliant chaque vecteur d'erreur de poids 1 avec la matrice de controle, et on enregistre le résultat dans la matrice error_matrix. Ensuite, on extrait les colonnes k+1 à n de error_matrix pour obtenir la table des syndromes.
+
