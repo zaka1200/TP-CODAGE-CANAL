@@ -24,7 +24,27 @@ Pour créer la matrice de contrôle de parité H à partir de la matrice génér
 ```matlab
 H=abs(transpose(null(G,'rational')))
 ```
+
 Cette commande trouvera une base pour l'espace null de G, qui est équivalente à la matrice de contrôle de parité H. Il est important de noter que cette commande utilise le rang de la matrice pour trouver la base de la nullité, il est donc important que la matrice G ne soit pas singulière pour que cette commande fonctionne correctement.
+
+- resultas :
+
+```matlab
+G =
+
+     1     0     0     0     1     1     0
+     0     1     0     0     0     1     1
+     0     0     1     0     1     0     1
+     0     0     0     1     1     1     1
+     
+
+H =
+
+     1     0     1     1     1     0     0
+     1     1     0     1     0     1     0
+     0     1     1     1     0     0     1
+```
+
 pour s'assurer que la matrice H est bien une matrice de contrôle de parité, on peut vérifier que G*H' = 0
 
 ```matlab
@@ -36,7 +56,9 @@ GH = G*H';
  
  ```matlab
 K=4; % Longueur des mots information message L=2^K; % nombre de mots codes
-for i=1:L, M(i,:)=de2bi(i-1,K,'left-msb'); end
+for i=1:L
+    M(i,:)=de2bi(i-1,K,'left-msb'); 
+end
 code=rem(M*G,2) % La table des mots codes
 ```
  
@@ -45,6 +67,46 @@ code=rem(M*G,2) % La table des mots codes
 - La ligne suivante utilise une boucle for pour itérer à travers toutes les valeurs de i de 1 à L. Pour chaque itération, la fonction de2bi est appelée avec la valeur actuelle de i moins 1 comme entrée et K comme nombre de bits. L'option 'left-msb' est utilisée pour spécifier que le bit le plus significatif est du côté gauche. La sortie de la fonction est stockée dans la variable M à la ligne et à la colonne correspondantes.
 
 - Enfin, la variable code est définie comme le résultat de la multiplication matricielle de M et G, prise modulo 2. On obtient ainsi le tableau des mots code.
+- resultas :
+
+```matlab
+M = 
+    0   0   0   0
+    0   0   0   1
+    0   0   1   0
+    0   0   1   1
+    0   1   0   0
+    0   1   0   1
+    0   1   1   0
+    0   1   1   1
+    1   0   0   0
+    1   0   0   1
+    1   0   1   0
+    1   0   1   1
+    1   1   0   0
+    1   1   0   1
+    1   1   1   0
+    1   1   1   1
+    
+code =
+    0   0   0   0   0   0   0
+    0   0   0   1   1   1   1
+    0   0   1   0   1   0   1
+    0   0   1   1   0   1   0  
+    0   1   0   0   0   1   1
+    0   1   0   1   1   0   0
+    0   1   1   0   1   1   0
+    0   1   1   1   0   0   1
+    1   0   0   0   1   1   0
+    1   0   0   1   0   0   1
+    1   0   1   0   0   1   1
+    1   0   1   1   1   0   0
+    1   1   0   0   1   0   1
+    1   1   0   1   0   1   0
+    1   1   1   0   0   0   0
+    1   1   1   1   1   1   1
+    
+```
 
 Pour déterminer toutes les erreurs possibles de poids 1 (et inférieur) et en déduire la table des syndromes, on va utiliser le code Matlab suivante :
 
@@ -60,4 +122,32 @@ Pour déterminer toutes les erreurs possibles de poids 1 (et inférieur) et en d
 ```
 
 ce code prend en entrée la matrice de controle utilisée pour générer le code, on utilise une boucle pour générer toutes les erreurs possibles de poids 1 (et inférieur) en multipliant chaque vecteur d'erreur de poids 1 avec la matrice de controle, et on enregistre le résultat dans la matrice error_matrix. Ensuite, on extrait les colonnes k+1 à n de error_matrix pour obtenir la table des syndromes.
+
+- resulats :
+
+```matlab
+error_matrix = 
+
+    0   0   0   0   0   0   0
+    1   0   0   0   0   0   0
+    0   1   0   0   0   0   0
+    0   0   1   0   0   0   0
+    0   0   0   1   0   0   0
+    0   0   0   0   1   0   0
+    0   0   0   0   0   1   0
+    0   0   0   0   0   0   1
+    
+syndrome_table =
+
+    0   0   0
+    1   1   0
+    0   1   1
+    1   0   1
+    1   1   1
+    1   0   0
+    0   1   0
+    0   0   1
+    
+```
+
 
