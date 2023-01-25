@@ -207,6 +207,7 @@ legend('Avec codege','sans codage')
 
 - La performance de transmission est considérablement améliorée lorsque l'on utilise un codage, comme le montre la courbe de BER (Ber Error Rate). On peut observer que la courbe de BER théorique obtenue avec codage est similaire à celle obtenue par simulation, ce qui démontre que l'utilisation de l'ECC (Error Correction Code) avec la matrice génératrice systématique G et la matrice de contrôle de parité H permet de corriger efficacement les erreurs de transmission dans un canal bruité.
 
+
 # Code de Hamming:
 
 Générez un code de Hamming C(7,4) grâce à la fonction hammgen() :
@@ -286,6 +287,23 @@ encoded  =
         1   0   0   0   1   1   0
       
 ```
+
+## Canal avec bruit blanc additif gaussien 
+
+Le bruit additif blanc gaussien est un type de bruit blanc qui suit une distribution normale avec une moyenne et une variance spécifiées. Il est utilisé pour tester les équipements de transmission, et à des niveaux plus bas pour améliorer les systèmes numériques par dither.
+
+```matlab
+>> figure ; 
+semilogy(Ebn0_db,BER_uncoded,'b',EbN0_dB,BER_coded, 'r');  
+legend('Non codee','Codee'); 
+xlabel('Eb / N0 (dB)'); 
+ylabel('BER');
+```
+
+![image](https://user-images.githubusercontent.com/121964432/214703121-9481cb75-de7b-4c72-b9d5-078c983d9b2d.png)
+
+un mot code est plus robuste au bruit qu'un message non code  et on peut le voir dans le graph dessus .
+
 # Code cyclique
 
 ```matlab
@@ -301,4 +319,21 @@ encoded  =
         1   0   1
 ```
 
+resultats :
+
+![image](https://user-images.githubusercontent.com/121964432/214707577-cb52e17f-c0ac-4485-88a4-e10d881c0722.png)
+
 Les codes cycliques sont des codes de correction d'erreur qui utilisent les propriétés des polynômes pour détecter et corriger les erreurs. Ils peuvent détecter toutes les erreurs de poids inférieur ou égal à t et corriger jusqu'à t erreurs par bloc de n bits. Pour choisir le meilleur code pour une application spécifique, il est important de considérer à la fois le pouvoir correcteur et le taux d'utilisation de la capacité de codage. Par exemple, le code C(15,5) a le plus grand pouvoir correcteur (t=3) parmi les codes présentés, mais il a un taux d'utilisation moins élevé de la capacité de codage. Alors que le code C(15,7) a un pouvoir correcteur moins élevé mais un taux d'utilisation plus élevé de la capacité de codage.
+
+les courbes de la probabilité d ‘erreur théorique et du BER en fonctiondu SNR dans le cas du codage cyclique
+
+
+![image](https://user-images.githubusercontent.com/121964432/214707911-95ded5d2-d854-40e0-a4cd-0fe66ead8bc6.png)
+
+
+
+- Le graphique généré par ce code montre la taux d'erreur binaire théorique (BER) et la probabilité d'erreur des codes BCH (15,7) et (31,16) simulés.
+La BER théorique est représentée par une ligne pleine et la probabilité d'erreur théorique est représentée par une ligne pointillée. La BER simulée et la probabilité d'erreur du code BCH (15,7) sont représentées par des cercles bleus et la BER simulée et la probabilité d'erreur du code BCH (31,16) sont représentées par des croix rouges.
+- L'axe des x représente le rapport signal sur bruit (SNR) en dB et l'axe des y représente la BER et la probabilité d'erreur en échelle logarithmique. Le graphique montre que la BER simulée et la probabilité d'erreur des codes BCH (15,7) et (31,16) sont proches de la BER théorique et de la probabilité d'erreur, mais avec un taux d'erreur légèrement plus élevé.
+- Le graphique montre également que lorsque le SNR augmente, la BER et la probabilité d'erreur diminuent, ce qui signifie que les performances des codes BCH s'améliorent avec l'augmentation du SNR.
+- Il est important de noter que les résultats peuvent varier en fonction des valeurs de paramètres utilisées dans le script, comme le nombre d'itérations, la plage de SNR, le nombre d'erreurs à corriger, etc.
