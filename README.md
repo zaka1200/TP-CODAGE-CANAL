@@ -169,3 +169,136 @@ end
 ```
 
 - La première fonction, encode, prend en entrée le message aléatoire et la matrice de génération pour coder le message et retourne le message codé. La deuxième fonction, decode, prend en entrée le message reçu avec bruit et la matrice de vérification pour décoder le message, puis calcule le syndrome en multipliant le message reçu avec bruit avec la matrice de vérification. Ensuite, elle utilise la fonction ismember pour trouver l'index de l'erreur dans la matrice d'erreur, puis crée le vecteur d'erreur à partir de cet index et ajoute ce vecteur d'erreur au message reçu avec bruit pour obtenir le message décodé.  	
+
+- Dans la suite il faut coder/décoder un message forme par des mots generes aleatoirement, en rajoutant un bruit AWGN entre les etapes de codage et de decodage
+
+```matlab
+>> ebn0 = 0:7
+>> BER = zeros(size(ebn0))
+>> BER_theorique = zeros(size(ebn0))
+```
+
+> la simulation rapport eb/n0 allant de 0 à 7 dB
+
+```matlab
+for i = 1:length(ebn0)
+    messgae=floor(rand(1,k).*2)
+    code_message =rem(message*G,2)
+    code_message_bruit = code_message+randn(size(code_message))*sqrt(1/(2*rho(i)))
+    message_decode=rem(code_message_bruit*H,2)
+    message = message(:,1:size(message_decode,2))
+    BER(i)= sum(message~=message_decode)/L
+    BER_theorique(i)=0.5*erfc(sqrt(10^(ebn0(i)/10)))
+end
+```
+- La boucle génère des mots messages aléatoires de longueur 4, puis les code, ajoute du bruit gaussien, les décode, calcule la probabilité d'erreur et la compare à la probabilité d'erreur théorique. Enfin, il trace un graphique montrant la probabilité d'erreur avec et sans codage.
+
+```matlab
+>> figure
+semilogy(ebn0,BER,'-o',ebn0,BER_theorique,'-*')
+xlabel('Eb/No (dB)')
+ylabel('BER')
+legend('Avec codege','sans codage')
+```
+
+![image](https://user-images.githubusercontent.com/121964432/214446626-3332914d-cd5c-40ba-bd18-90bee13e8ab2.png)
+
+
+
+- La performance de transmission est considérablement améliorée lorsque l'on utilise un codage, comme le montre la courbe de BER (Ber Error Rate). On peut observer que la courbe de BER théorique obtenue avec codage est similaire à celle obtenue par simulation, ce qui démontre que l'utilisation de l'ECC (Error Correction Code) avec la matrice génératrice systématique G et la matrice de contrôle de parité H permet de corriger efficacement les erreurs de transmission dans un canal bruité.
+
+# Code de Hamming:
+
+Générez un code de Hamming C(7,4) grâce à la fonction hammgen() :
+
+```matlab
+>> [H,G,n,k]=hammgen(3)
+
+H =
+
+     1     0     0     1     0     1     1
+     0     1     0     1     1     1     0
+     0     0     1     0     1     1     1
+
+
+G =
+
+     1     1     0     1     0     0     0
+     0     1     1     0     1     0     0
+     1     1     1     0     0     1     0
+     1     0     1     0     0     0     1
+
+
+n =
+
+     7
+
+
+k =
+
+     4
+
+```
+
+- Codez les bits émis avec la fonction encode() :
+
+```matlab
+>> msg=randi([0 1],1,k)
+
+msg =
+
+     1     1     0     1
+     
+     
+>> motcode=encode(msg,n,k)
+
+motcode =
+
+     0     0     0     1     1     0     1
+```
+
+Au départ, un message aléatoire composé de 0 et 1 de longueur k est généré. Ensuite, la fonction encode est utilisée pour coder ce mot émis.
+
+- A la reception, decodage des bits emis a l aide  la fonction decode()
+
+```matlab
+>> motdecode=decode(motcode,n,k)
+
+motdecode =
+
+     1     1     0     1
+```
+
+
+- On génère un mot aléatoirement de la même façon qu'auparavant :
+
+```matlab
+data =
+    1x4 logical array
+    0   1   1   0
+```
+
+- Par suite on encode par la fonction encode :
+
+```matlab
+>> encoded=encode(data,n,k,'hamming/binnary')
+encoded  =
+        1   0   0   0   1   1   0
+      
+```
+# Code cyclique
+
+```matlab
+>> message = [1   1   1   0   0   0   1   1]
+ 
+ message =
+            1   1   1   0   0   0   1   1
+>> poly =[1 1   0   0   1   1]
+  poly  =
+        1   1   0   0   1   1
+ >> code = deconv(message,poly)
+  code =
+        1   0   1
+```
+
+Les codes cycliques sont des codes de correction d'erreur qui utilisent les propriétés des polynômes pour détecter et corriger les erreurs. Ils peuvent détecter toutes les erreurs de poids inférieur ou égal à t et corriger jusqu'à t erreurs par bloc de n bits. Pour choisir le meilleur code pour une application spécifique, il est important de considérer à la fois le pouvoir correcteur et le taux d'utilisation de la capacité de codage. Par exemple, le code C(15,5) a le plus grand pouvoir correcteur (t=3) parmi les codes présentés, mais il a un taux d'utilisation moins élevé de la capacité de codage. Alors que le code C(15,7) a un pouvoir correcteur moins élevé mais un taux d'utilisation plus élevé de la capacité de codage.
